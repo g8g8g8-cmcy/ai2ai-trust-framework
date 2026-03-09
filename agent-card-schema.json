@@ -1,0 +1,149 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schema.ai2aiverify.com/ai-agent/v1",
+  "title": "AI Agent Verification Card",
+  "description": "W3C Verifiable Credential schema for AI agent identity and trust verification. Published by AI2AI Platform, March 2026. CC BY 4.0.",
+  "type": "object",
+  "required": ["@context", "type", "issuer", "issuanceDate", "credentialSubject", "cryptographicProof"],
+  "properties": {
+    "@context": {
+      "type": "array",
+      "items": { "type": "string" },
+      "default": [
+        "https://www.w3.org/2018/credentials/v1",
+        "https://schema.ai2aiverify.com/ai-agent/v1"
+      ]
+    },
+    "type": {
+      "type": "array",
+      "items": { "type": "string" },
+      "default": ["VerifiableCredential", "AIAgentClearanceCard"]
+    },
+    "issuer": {
+      "type": "string",
+      "description": "DID or URL of the issuing registry"
+    },
+    "issuanceDate": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "expirationDate": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Recommended: 12 months from issuance"
+    },
+    "credentialSubject": {
+      "type": "object",
+      "required": ["agentID", "agentName", "developerEntity", "enrollmentStatus", "trustTier"],
+      "properties": {
+        "agentID": {
+          "type": "string",
+          "pattern": "^did:agent:.+$",
+          "description": "Decentralized identifier for the agent"
+        },
+        "agentName": {
+          "type": "string"
+        },
+        "agentVersion": {
+          "type": "string",
+          "description": "Semantic version string e.g. 1.2.0"
+        },
+        "developerEntity": {
+          "type": "string",
+          "description": "Legal name of developer organization or individual"
+        },
+        "developerDID": {
+          "type": "string",
+          "pattern": "^did:.+$"
+        },
+        "approvedSkills": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Slugs of skills verified by registry testing"
+        },
+        "verifiedBadges": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["badgeID", "issuedBy", "issuedDate"],
+            "properties": {
+              "badgeID": { "type": "string" },
+              "issuedBy": { "type": "string" },
+              "issuedDate": { "type": "string", "format": "date-time" },
+              "expiresDate": { "type": "string", "format": "date-time" }
+            }
+          }
+        },
+        "trustTier": {
+          "type": "string",
+          "enum": ["Unverified", "Bronze", "Silver", "Gold", "AAA"]
+        },
+        "enrollmentStatus": {
+          "type": "string",
+          "enum": ["Not Enrolled", "Enrolled", "Suspended", "Revoked"]
+        },
+        "operationalScope": {
+          "type": "object",
+          "properties": {
+            "allowedRegions": {
+              "type": "array",
+              "items": { "type": "string", "pattern": "^[A-Z]{2}$" }
+            },
+            "restrictedRegions": {
+              "type": "array",
+              "items": { "type": "string", "pattern": "^[A-Z]{2}$" }
+            },
+            "dataResidency": { "type": "string" }
+          }
+        },
+        "complianceFlags": {
+          "type": "object",
+          "properties": {
+            "euAiAct": {
+              "type": "string",
+              "enum": ["Exempt", "Limited Risk", "High Risk", "Unassessed"]
+            },
+            "gdpr": {
+              "type": "string",
+              "enum": ["Compliant", "Not Applicable", "Unassessed"]
+            },
+            "nistAiRmf": {
+              "type": "string",
+              "enum": ["Aligned", "Partial", "Unassessed"]
+            },
+            "iso42001": {
+              "type": "string",
+              "enum": ["Certified", "In Progress", "Unassessed"]
+            }
+          }
+        }
+      }
+    },
+    "cryptographicProof": {
+      "type": "object",
+      "required": ["type", "created", "verificationMethod", "proofPurpose", "proofValue"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "Ed25519Signature2020"
+        },
+        "created": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "verificationMethod": {
+          "type": "string",
+          "description": "URL of the public key used to verify this credential"
+        },
+        "proofPurpose": {
+          "type": "string",
+          "const": "assertionMethod"
+        },
+        "proofValue": {
+          "type": "string",
+          "description": "Base58-encoded Ed25519 signature"
+        }
+      }
+    }
+  }
+}
